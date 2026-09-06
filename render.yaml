@@ -15,9 +15,7 @@ services:
     runtime: node
     plan: starter                 # el plan gratuito no admite disco persistente
     region: frankfurt             # cambialo al mas cercano a tu audiencia
-    # El codigo del dashboard vive en esta rama. Cuando la fusiones a
-    # main, cambia esta linea a "main" y Render seguira esa rama.
-    branch: claude/mm2-trades-creator-dashboard-rxyr2z
+    branch: main
     buildCommand: npm ci
     startCommand: npm run start:prod
     healthCheckPath: /api/health

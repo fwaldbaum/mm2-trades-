@@ -23,15 +23,9 @@ duradero, y SQLite no funcionaria.
 
 El repositorio incluye `render.yaml`, asi que Render lo configura solo.
 
-> **Rama.** `render.yaml` apunta a `claude/mm2-trades-creator-dashboard-rxyr2z`,
-> que es donde vive el codigo del dashboard. La rama `main` todavia contiene
-> el prototipo anterior. Cuando fusiones, cambia `branch:` a `main` en
-> `render.yaml` y Render pasara a seguir esa rama.
-
 1. En Render: **New → Blueprint**.
 2. Conecta el repositorio `fwaldbaum/mm2-trades-`.
-3. Selecciona la rama `claude/mm2-trades-creator-dashboard-rxyr2z` y confirma.
-   Render lee `render.yaml` y crea:
+3. Confirma. Render lee `render.yaml` desde `main` y crea:
    - un servicio web Node con `npm ci` y `npm run start:prod`,
    - un disco de 1 GB montado en `/data`,
    - `SESSION_SECRET` generado automaticamente,
@@ -39,8 +33,31 @@ El repositorio incluye `render.yaml`, asi que Render lo configura solo.
 4. Ajusta `region` en `render.yaml` si tu audiencia no esta en Europa.
 
 El primer arranque crea el esquema, los 5 tiers y las 18 recompensas MM2.
-Los despliegues siguientes vuelven a ejecutar el sembrado, que es
-idempotente: no duplica ni pisa nada, y conserva los datos existentes.
+Los despliegues siguientes vuelven a ejecutarlo, y es idempotente: no
+duplica nada y **no pisa los valores que hayas cambiado** — si editas la
+tasa de un tier o el stock de un item, se conservan.
+
+### Si creaste el servicio a mano en vez de con el blueprint
+
+Un servicio web normal de Render ignora `render.yaml` y usa sus valores por
+defecto (`npm install` y `node server.js`). La aplicacion arranca igual y se
+autoconfigura los tiers y el catalogo, pero **tienes que anadir tu mismo**,
+en *Settings* y *Environment*:
+
+| Ajuste | Valor |
+|---|---|
+| Build Command | `npm ci` |
+| Start Command | `npm run start:prod` |
+| Disk | punto de montaje `/data`, 1 GB |
+| `SESSION_SECRET` | genera uno con `openssl rand -hex 32` |
+| `DATABASE_FILE` | `/data/mm2trades.sqlite` |
+| `SECURE_COOKIES` | `true` |
+| `SEED_DEMO` | `false` |
+| `NODE_ENV` | `production` |
+
+Sin el disco y sin `DATABASE_FILE`, la aplicacion arranca pero avisa en los
+logs de que la base de datos es efimera. Hazle caso: en ese estado cada
+despliegue borra saldos y retiros.
 
 ### Alta del primer creador
 
