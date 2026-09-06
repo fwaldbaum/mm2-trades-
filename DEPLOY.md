@@ -23,6 +23,14 @@ duradero, y SQLite no funcionaria.
 
 El repositorio incluye `render.yaml`, asi que Render lo configura solo.
 
+> **`render.yaml` esta ahora en modo vista previa: plan gratuito, sin coste.**
+> El plan gratuito de Render no admite disco persistente, asi que la base
+> de datos se borra en cada reinicio y el servicio se duerme tras unos
+> minutos sin visitas (el primer acceso despues tarda cerca de un minuto).
+> Sirve para ver el panel funcionando, no para creadores reales.
+> El propio `render.yaml` explica al final que cambiar para produccion:
+> `plan: starter`, el bloque `disk:` y `SEED_DEMO=false`.
+
 1. En Render: **New → Blueprint**.
 2. Conecta el repositorio `fwaldbaum/mm2-trades-`.
 3. Confirma. Render lee `render.yaml` desde `main` y crea:
