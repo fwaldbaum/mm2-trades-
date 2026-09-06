@@ -1,0 +1,200 @@
+/* =====================================================================
+   MM2 TRADES · Creator Dashboard
+   Fundamentos: tokens, reset, tipografia y utilidades.
+   ===================================================================== */
+
+:root {
+  /* Superficies */
+  --bg:            #070a12;
+  --bg-glow-a:     rgba(124, 92, 255, .16);
+  --bg-glow-b:     rgba(51, 225, 255, .10);
+  --surface:       #0d1220;
+  --surface-2:     #111829;
+  --surface-3:     #172034;
+  --line:          rgba(146, 166, 224, .12);
+  --line-strong:   rgba(146, 166, 224, .22);
+
+  /* Texto */
+  --text:          #e9eefb;
+  --text-soft:     #b6c1de;
+  --muted:         #8592b4;
+  --dim:           #616e91;
+
+  /* Marca */
+  --brand:         #7c5cff;
+  --brand-soft:    #9b83ff;
+  --brand-dim:     rgba(124, 92, 255, .14);
+  --cyan:          #33e1ff;
+  --cyan-dim:      rgba(51, 225, 255, .12);
+
+  /* Semanticos */
+  --robux:         #3ddc97;
+  --robux-dim:     rgba(61, 220, 151, .13);
+  --warn:          #ffb84d;
+  --warn-dim:      rgba(255, 184, 77, .13);
+  --danger:        #ff6b7d;
+  --danger-dim:    rgba(255, 107, 125, .13);
+  --info:          #5b9dff;
+  --info-dim:      rgba(91, 157, 255, .13);
+
+  /* Rarezas MM2 */
+  --r-godly:     #b085ff;
+  --r-ancient:   #ffb454;
+  --r-vintage:   #e0c68a;
+  --r-legendary: #66d4ff;
+  --r-rare:      #ff9ec4;
+  --r-uncommon:  #8fd4b0;
+  --r-common:    #9aa6c4;
+
+  /* Formas */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 26px;
+  --r-pill: 999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(2, 5, 14, .5);
+  --shadow-md: 0 12px 32px -18px rgba(2, 5, 14, .9);
+  --shadow-lg: 0 30px 70px -34px rgba(2, 5, 14, .95);
+  --glow-brand: 0 0 0 1px rgba(124, 92, 255, .35), 0 18px 44px -22px rgba(124, 92, 255, .75);
+
+  /* Ritmo */
+  --gap: 20px;
+  --pad-card: 22px;
+  --header-h: 68px;
+  --maxw: 1440px;
+
+  /* Movimiento */
+  --ease: cubic-bezier(.32, .72, .28, 1);
+  --fast: 140ms var(--ease);
+  --base: 240ms var(--ease);
+  --slow: 460ms var(--ease);
+
+  --font: "Inter var", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo,
+          Consolas, "Liberation Mono", monospace;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Halo ambiental fijo: da profundidad sin coste de repintado. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(900px 520px at 12% -8%, var(--bg-glow-a), transparent 62%),
+    radial-gradient(760px 460px at 92% 4%, var(--bg-glow-b), transparent 60%),
+    radial-gradient(1100px 700px at 50% 108%, rgba(124, 92, 255, .07), transparent 70%);
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.18;
+}
+h1 { font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -.032em; }
+h2 { font-size: clamp(19px, 2.2vw, 23px); }
+h3 { font-size: 16px; }
+p  { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--brand-soft); }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+img, svg { display: block; max-width: 100%; }
+
+::selection { background: rgba(124, 92, 255, .38); color: #fff; }
+
+/* Scrollbars discretas */
+* { scrollbar-width: thin; scrollbar-color: rgba(146, 166, 224, .22) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(146, 166, 224, .18);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(146, 166, 224, .32); background-clip: content-box; }
+
+:focus-visible {
+  outline: 2px solid var(--brand-soft);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ------------------------------- Utilidades ------------------------- */
+.num       { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+.mono      { font-family: var(--mono); }
+.muted     { color: var(--muted); }
+.dim       { color: var(--dim); }
+.soft      { color: var(--text-soft); }
+.tiny      { font-size: 12px; }
+.small     { font-size: 13px; }
+.strong    { font-weight: 650; }
+.center    { text-align: center; }
+.right     { text-align: right; }
+.nowrap    { white-space: nowrap; }
+.truncate  { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hidden    { display: none !important; }
+.stack     { display: flex; flex-direction: column; }
+.row       { display: flex; align-items: center; }
+.wrap      { flex-wrap: wrap; }
+.between   { justify-content: space-between; }
+.gap-4  { gap: 4px; }  .gap-6  { gap: 6px; }  .gap-8  { gap: 8px; }
+.gap-10 { gap: 10px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; }
+.gap-20 { gap: 20px; } .gap-24 { gap: 24px; }
+.grow  { flex: 1 1 auto; min-width: 0; }
+.mt-4  { margin-top: 4px; }  .mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; } .mt-24 { margin-top: 24px; }
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.robux { color: var(--robux); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

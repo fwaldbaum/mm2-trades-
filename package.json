@@ -1,14 +1,23 @@
 {
-  "name": "mm2-verify",
+  "name": "mm2-trades-creator-dashboard",
   "version": "1.0.0",
-  "description": "Sistema de verificación simple para MM2 Trades",
+  "private": true,
+  "description": "MM2 Trades — Creator / Sponsorship Dashboard",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "reset": "node scripts/reset.js",
+    "test": "node tests/api.test.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "nanoid": "^4.0.0"
+    "better-sqlite3": "^13.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2"
   }
 }
