@@ -1,0 +1,39 @@
+# =====================================================================
+# MM2 Trades · Creator Dashboard — Blueprint de Render
+#
+# Render lee este fichero al conectar el repositorio y crea el servicio.
+#
+# IMPORTANTE: el disco persistente ("disk") es obligatorio. La base de
+# datos es SQLite y vive en un fichero: sin disco, cada despliegue o
+# reinicio borraria creadores, envios, balances y retiros.
+# Los discos persistentes requieren un plan de pago en Render.
+# =====================================================================
+
+services:
+  - type: web
+    name: mm2-trades-creators
+    runtime: node
+    plan: starter                 # el plan gratuito no admite disco persistente
+    region: frankfurt             # cambialo al mas cercano a tu audiencia
+    branch: main
+    buildCommand: npm ci
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+
+    # El disco se monta en /data y sobrevive a los despliegues.
+    disk:
+      name: mm2trades-data
+      mountPath: /data
+      sizeGB: 1
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_FILE
+        value: /data/mm2trades.sqlite
+      - key: SECURE_COOKIES
+        value: "true"             # Render sirve por HTTPS
+      - key: SEED_DEMO
+        value: "false"            # sin creador de demostracion en produccion
+      - key: SESSION_SECRET
+        generateValue: true       # Render genera uno seguro y no se expone

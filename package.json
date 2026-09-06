@@ -13,7 +13,9 @@
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
     "reset": "node scripts/reset.js",
-    "test": "node tests/api.test.js"
+    "test": "node tests/api.test.js",
+    "start:prod": "node scripts/seed.js && node server.js",
+    "seed:prod": "SEED_DEMO=false node scripts/seed.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

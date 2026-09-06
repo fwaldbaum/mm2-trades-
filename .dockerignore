@@ -1,0 +1,14 @@
+node_modules
+data
+.git
+.gitignore
+.env
+.env.local
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+npm-debug.log*
+tests
+README.md
+DEPLOY.md
+.github
