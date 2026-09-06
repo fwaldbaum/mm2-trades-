@@ -77,10 +77,17 @@ function grant(amountRobux) {
 
 before(async () => {
   settings.ensureDefaults();
-  // Estructura minima de tiers para las pruebas.
+  // El servidor ya siembra los tiers al arrancar. Las pruebas fijan las
+  // tasas de T5 de forma explicita para no depender de esos valores por
+  // defecto: si administracion los cambia, las cuentas de aqui siguen
+  // siendo deterministas.
   db.prepare(`
     INSERT OR IGNORE INTO tiers (key, name, rank, long_rate_per_1k, short_rate_per_1k, multiplier, benefits)
     VALUES ('T5', 'Starter', 1, 400, 200, 1, '[]')
+  `).run();
+  db.prepare(`
+    UPDATE tiers SET long_rate_per_1k = 400, short_rate_per_1k = 200, multiplier = 1
+    WHERE key = 'T5'
   `).run();
   db.prepare(`
     INSERT OR IGNORE INTO mm2_items (slug, name, rarity, category, value_robux, stock)

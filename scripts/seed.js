@@ -19,81 +19,26 @@ const notifications = require('../src/services/notifications');
 const creatorsService = require('../src/services/creators');
 const { hashPassword } = require('../src/lib/crypto');
 const ITEMS = require('../src/db/items');
+const { ensureStructuralData } = require('../src/db/bootstrap');
 const { itemSvg } = require('./lib/svg-items');
 
 migrate();
 settings.ensureDefaults();
 
 /* ------------------------------------------------------------------ *
- * Tiers
- *
- * Valores de partida. Administracion los edita; el frontend siempre los
- * lee de la API y nunca mantiene copia propia.
+ * Tiers y catalogo MM2 (compartido con el arranque del servidor)
  * ------------------------------------------------------------------ */
-const TIER_SEED = [
-  {
-    key: 'T5', name: 'Starter', rank: 1, long: 375, short: 188, multiplier: 1,
-    subs: 1000, views: 5000,
-    benefits: ['Codigo de creador propio', 'Retiros en Robux e items MM2', 'Soporte por ticket']
-  },
-  {
-    key: 'T4', name: 'Creator', rank: 2, long: 500, short: 250, multiplier: 1,
-    subs: 10000, views: 15000,
-    benefits: ['Todo lo de Starter', 'Revision prioritaria de envios', 'Recursos de marca descargables']
-  },
-  {
-    key: 'T3', name: 'Rising', rank: 3, long: 750, short: 375, multiplier: 1,
-    subs: 25000, views: 30000,
-    benefits: ['Todo lo de Creator', 'Acceso anticipado a sorteos', 'Item exclusivo por temporada']
-  },
-  {
-    key: 'T2', name: 'Partner', rank: 4, long: 1000, short: 500, multiplier: 1,
-    subs: 50000, views: 50000,
-    benefits: ['Todo lo de Rising', 'Campanas pagadas a medida', 'Contacto directo con el equipo']
-  },
-  {
-    key: 'T1', name: 'Elite', rank: 5, long: 1250, short: 625, multiplier: 1,
-    subs: 100000, views: 100000,
-    benefits: ['Todo lo de Partner', 'Retiros con prioridad maxima', 'Colaboraciones destacadas en la plataforma']
-  }
-];
+ensureStructuralData();
 
-const upsertTier = db.prepare(`
-  INSERT INTO tiers (key, name, rank, long_rate_per_1k, short_rate_per_1k, multiplier,
-                     min_subscribers, min_avg_views, benefits, requirements_note)
-  VALUES (@key, @name, @rank, @long, @short, @multiplier, @subs, @views, @benefits, @note)
-  ON CONFLICT(key) DO NOTHING
-`);
-db.transaction(() => {
-  for (const t of TIER_SEED) {
-    upsertTier.run({
-      ...t,
-      benefits: JSON.stringify(t.benefits),
-      note: 'Cumples el requisito con suscriptores O con media de views, lo que te favorezca.'
-    });
-  }
-})();
-
-/* ------------------------------------------------------------------ *
- * Catalogo de recompensas MM2 + sus ilustraciones
- * ------------------------------------------------------------------ */
+// Las ilustraciones se regeneran aqui, no al arrancar: son ficheros del
+// repositorio y solo hacen falta al preparar el entorno.
 const imgDir = path.join(config.ROOT, 'public', 'assets', 'img', 'items');
 fs.mkdirSync(imgDir, { recursive: true });
+for (const item of ITEMS) {
+  fs.writeFileSync(path.join(imgDir, `${item.slug}.svg`), itemSvg(item));
+}
 
-const upsertItem = db.prepare(`
-  INSERT INTO mm2_items (slug, name, rarity, category, value_robux, image_url, accent, stock)
-  VALUES (@slug, @name, @rarity, @category, @value_robux, @image_url, @accent, @stock)
-  ON CONFLICT(slug) DO UPDATE SET image_url = excluded.image_url
-`);
-db.transaction(() => {
-  for (const item of ITEMS) {
-    const file = `${item.slug}.svg`;
-    fs.writeFileSync(path.join(imgDir, file), itemSvg(item));
-    upsertItem.run({ ...item, image_url: `/assets/img/items/${file}` });
-  }
-})();
-
-console.log(`[seed] ${TIER_SEED.length} tiers y ${ITEMS.length} recompensas MM2 listas.`);
+console.log(`[seed] ${db.prepare('SELECT COUNT(*) n FROM tiers').get().n} tiers y ${ITEMS.length} recompensas MM2 listas.`);
 
 /* ------------------------------------------------------------------ *
  * Creador de demostracion

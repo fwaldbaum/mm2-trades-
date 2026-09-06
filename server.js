@@ -7,11 +7,19 @@ const cookieParser = require('cookie-parser');
 const config = require('./src/config');
 require('./src/db'); // aplica el esquema al abrir la conexion
 const settings = require('./src/services/settings');
+const { ensureStructuralData } = require('./src/db/bootstrap');
 const apiRouter = require('./src/routes');
 const { attachUser } = require('./src/middleware/auth');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandler');
 
 settings.ensureDefaults();
+
+// Tiers y catalogo MM2. Aqui y no solo en el script de sembrado, para que
+// el despliegue sea correcto aunque arranque con "node server.js".
+const bootstrapped = ensureStructuralData();
+if (bootstrapped.tiers || bootstrapped.items) {
+  console.log(`[bootstrap] ${bootstrapped.tiers} tier(s) y ${bootstrapped.items} recompensa(s) MM2 creadas.`);
+}
 
 const app = express();
 app.set('trust proxy', 1);

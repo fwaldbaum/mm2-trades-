@@ -27,6 +27,18 @@ Cubierto por pruebas en `tests/api.test.js`.
 
 ---
 
+## Despliegue
+
+Configuracion lista para Render (`render.yaml`), Docker (`Dockerfile`,
+`docker-compose.yml`) y VPS. Los pasos exactos, los requisitos y las
+comprobaciones posteriores estan en **[DEPLOY.md](DEPLOY.md)**.
+
+Dos condiciones que no son negociables en produccion: **disco persistente**
+(la base de datos es un fichero SQLite) y **`SESSION_SECRET`** definido — sin
+el, la aplicacion se niega a arrancar a proposito.
+
+---
+
 ## Puesta en marcha
 
 ```bash

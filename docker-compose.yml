@@ -1,0 +1,28 @@
+# Despliegue en un VPS propio.
+#
+#   1. Genera el secreto:  openssl rand -hex 32
+#   2. Ponlo en un archivo .env junto a este fichero:
+#        SESSION_SECRET=<el secreto generado>
+#   3. docker compose up -d
+#
+# Detras de un proxy con HTTPS (Caddy, Nginx, Traefik) anade
+# SECURE_COOKIES=true.
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_FILE: /data/mm2trades.sqlite
+      SESSION_SECRET: ${SESSION_SECRET:?define SESSION_SECRET en el archivo .env}
+      SECURE_COOKIES: ${SECURE_COOKIES:-false}
+      SEED_DEMO: ${SEED_DEMO:-false}
+    volumes:
+      - mm2trades-data:/data
+
+volumes:
+  mm2trades-data:

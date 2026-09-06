@@ -29,7 +29,19 @@ const isProd = process.env.NODE_ENV === 'production';
 let sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
   if (isProd) {
-    throw new Error('SESSION_SECRET es obligatorio en produccion.');
+    // Fallar aqui es intencionado: sin un secreto estable las sesiones se
+    // invalidarian en cada reinicio. El mensaje dice como resolverlo, para
+    // que un despliegue fallido no obligue a leer el codigo.
+    throw new Error([
+      'Falta la variable de entorno SESSION_SECRET, obligatoria en produccion.',
+      '',
+      'Genera un secreto:',
+      '    openssl rand -hex 32',
+      '',
+      'y definelo en tu plataforma de despliegue como SESSION_SECRET.',
+      'En Render: Dashboard -> el servicio -> Environment -> Add Environment Variable.',
+      'Con el blueprint (render.yaml) se genera solo; ver DEPLOY.md.'
+    ].join('\n'));
   }
   // En desarrollo se persiste un secreto local para no invalidar sesiones al reiniciar.
   const secretFile = path.join(dataDir, '.session-secret');
@@ -41,13 +53,31 @@ if (!sessionSecret) {
   }
 }
 
+const databaseFile = process.env.DATABASE_FILE
+  ? path.resolve(ROOT, process.env.DATABASE_FILE)
+  : path.join(dataDir, 'mm2trades.sqlite');
+
+// La base de datos es un fichero. Si en produccion vive dentro del propio
+// despliegue en lugar de un disco persistente, se pierde en cada reinicio:
+// creadores, balances y retiros incluidos. Avisar es mejor que descubrirlo
+// cuando ya han desaparecido.
+if (isProd && databaseFile.startsWith(ROOT)) {
+  console.warn([
+    '',
+    '  AVISO: la base de datos esta dentro del despliegue, no en un disco persistente.',
+    `  Ruta actual: ${databaseFile}`,
+    '  Cada reinicio o despliegue borrara creadores, saldos y retiros.',
+    '  Monta un disco persistente y apunta DATABASE_FILE ahi (p. ej. /data/mm2trades.sqlite).',
+    '  Ver DEPLOY.md.',
+    ''
+  ].join('\n'));
+}
+
 module.exports = {
   ROOT,
   isProd,
   port: Number(process.env.PORT || 3000),
-  databaseFile: process.env.DATABASE_FILE
-    ? path.resolve(ROOT, process.env.DATABASE_FILE)
-    : path.join(dataDir, 'mm2trades.sqlite'),
+  databaseFile,
   sessionSecret,
   sessionCookieName: 'mm2t_session',
   sessionTtlDays: 30,
