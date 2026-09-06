@@ -23,9 +23,15 @@ duradero, y SQLite no funcionaria.
 
 El repositorio incluye `render.yaml`, asi que Render lo configura solo.
 
+> **Rama.** `render.yaml` apunta a `claude/mm2-trades-creator-dashboard-rxyr2z`,
+> que es donde vive el codigo del dashboard. La rama `main` todavia contiene
+> el prototipo anterior. Cuando fusiones, cambia `branch:` a `main` en
+> `render.yaml` y Render pasara a seguir esa rama.
+
 1. En Render: **New → Blueprint**.
 2. Conecta el repositorio `fwaldbaum/mm2-trades-`.
-3. Elige la rama y confirma. Render lee `render.yaml` y crea:
+3. Selecciona la rama `claude/mm2-trades-creator-dashboard-rxyr2z` y confirma.
+   Render lee `render.yaml` y crea:
    - un servicio web Node con `npm ci` y `npm run start:prod`,
    - un disco de 1 GB montado en `/data`,
    - `SESSION_SECRET` generado automaticamente,
